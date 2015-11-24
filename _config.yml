@@ -35,6 +35,7 @@ colors:
   turquoise: '#0fbfcf'
   tsinghua:  '#660874'
   winblue:   '#094AB2'
+  gray:      '#2e2e2e'
 
 kramdown:
   auto_ids:  false
