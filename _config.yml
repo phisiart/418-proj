@@ -33,6 +33,7 @@ colors:
   purple:    '#c869bf'
   orange:    '#fab125'
   turquoise: '#0fbfcf'
+  tsinghua:  '#660874'
 
 kramdown:
   auto_ids:  false
