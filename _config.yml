@@ -26,18 +26,24 @@ google_analytics_key: ## UA-49607422-1 ## put YOUR key here to enable tracking! 
 
 ### template colors, used site-wide via css ###
 colors:
-  black:     '#111111'
-  white:     '#f8f8f8'
-  blue:      '#49a7e9'
-  green:     '#9bcf2f'
-  purple:    '#c869bf'
-  orange:    '#fab125'
-  turquoise: '#0fbfcf'
-  tsinghua:  '#660874'
-  winblue:   '#094AB2'
-  gray:      '#2e2e2e'
-  blue2:     '#353d41'
-  cmu:       '#af1e2d'
+  black:        '#111111'
+  white:        '#f8f8f8'
+  blue:         '#49a7e9'
+  green:        '#9bcf2f'
+  purple:       '#c869bf'
+  orange:       '#fab125'
+  turquoise:    '#0fbfcf'
+  tsinghua:     '#660874'
+  winblue:      '#094AB2'
+  gray:         '#2e2e2e'
+  light-gray:   '#353d41'
+  cmu-red:      '#af1e2d'
+  cmu-yello:    '#f2a900'
+  cmu-green:    '#00843d'
+  cmu-blue:     '#002D72'
+  stanford-red: '#8c1515'
+  stanford-gray: '#4d4f53'
+  weired-blue:  '#1d4f91'
 
 kramdown:
   auto_ids:  false
