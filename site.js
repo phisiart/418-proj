@@ -26,9 +26,12 @@ $.extend($.easing,
         navItems = this;
 
         //attatch click listeners
-    	navItems.on('click', function(event){
-    		event.preventDefault();
-            var navID = $(this).attr("href").substring(1);
+    	navItems.on('click', function(event) {
+    		var navID = $(this).attr("href").substring(1);
+            if (navID.indexOf('blog') !== -1) {
+                return;
+            }
+            event.preventDefault();
             disableScrollFn = true;
             activateNav(navID);
             populateDestinations(); //recalculate these!
@@ -43,7 +46,7 @@ $.extend($.easing,
         populateDestinations(); //should also be run on browser resize, btw
 
         // setup scroll listener
-        $(document).scroll(function(){
+        $(document).scroll(function() {
             if (disableScrollFn) { return; }
             var page_height = $(window).height();
             var pos = $(this).scrollTop();
@@ -56,21 +59,28 @@ $.extend($.easing,
     };
 
     function populateDestinations() {
-        navItems.each(function(){
+        navItems.each(function() {
             var scrollID = $(this).attr('href').substring(1);
+            if (scrollID.indexOf('blog') !== -1) {
+                return;
+            }
             navs[scrollID] = (settings.activateParentNode)? this.parentNode : this;
             sections[scrollID] = $(document.getElementById(scrollID)).offset().top;
         });
     }
 
     function activateNav(navID) {
-        for (nav in navs) { $(navs[nav]).removeClass('active'); }
+        for (nav in navs) {
+            if (navID.indexOf('blog') === -1) {
+                $(navs[nav]).removeClass('active');
+            }
+        }
         $(navs[navID]).addClass('active');
     }
 })( jQuery );
 
 
-$(document).ready(function (){
+$(document).ready(function () {
 
     $('nav li a').navScroller();
 
@@ -80,8 +90,8 @@ $(document).ready(function (){
 	});
 
     //links going to other sections nicely scroll
-	$(".container a").each(function(){
-        if ($(this).attr("href").charAt(0) == '#'){
+	$(".container a").each(function() {
+        if ($(this).attr("href").charAt(0) == '#') {
             $(this).on('click', function(event) {
         		event.preventDefault();
                 var target = $(event.target).closest("a");
