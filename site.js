@@ -3,15 +3,14 @@ $.extend($.easing,
 {
     def: 'easeOutQuad',
     easeInOutExpo: function (x, t, b, c, d) {
-        if (t==0) return b;
-        if (t==d) return b+c;
-        if ((t/=d/2) < 1) return c/2 * Math.pow(2, 10 * (t - 1)) + b;
-        return c/2 * (-Math.pow(2, -10 * --t) + 2) + b;
+        if (t == 0) return b;
+        if (t == d) return b+c;
+        if ((t /= d / 2) < 1) return c / 2 * Math.pow(2, 10 * (t - 1)) + b;
+        return c / 2 * (-Math.pow(2, -10 * --t) + 2) + b;
     }
 });
 
-(function( $ ) {
-
+(function($) {
     var settings;
     var disableScrollFn = false;
     var navItems;
@@ -36,7 +35,7 @@ $.extend($.easing,
             activateNav(navID);
             populateDestinations(); //recalculate these!
         	$('html,body').animate({scrollTop: sections[navID] - settings.scrollToOffset},
-                settings.scrollSpeed, "easeInOutExpo", function(){
+                settings.scrollSpeed, "easeInOutExpo", function() {
                     disableScrollFn = false;
                 }
             );
@@ -77,26 +76,25 @@ $.extend($.easing,
         }
         $(navs[navID]).addClass('active');
     }
-})( jQuery );
+})(jQuery);
 
 
-$(document).ready(function () {
-
+$(document).ready(function() {
     $('nav li a').navScroller();
 
     //section divider icon click gently scrolls to reveal the section
-	$(".sectiondivider").on('click', function(event) {
-    	$('html,body').animate({scrollTop: $(event.target.parentNode).offset().top - 50}, 400, "linear");
-	});
+    $(".sectiondivider").on('click', function(event) {
+        $('html,body').animate({scrollTop: $(event.target.parentNode).offset().top - 50}, 400, "linear");
+    });
 
     //links going to other sections nicely scroll
-	$(".container a").each(function() {
+    $(".container a").each(function() {
         if ($(this).attr("href").charAt(0) == '#') {
             $(this).on('click', function(event) {
-        		event.preventDefault();
+                event.preventDefault();
                 var target = $(event.target).closest("a");
                 var targetHight =  $(target.attr("href")).offset().top
-            	$('html,body').animate({scrollTop: targetHight - 170}, 800, "easeInOutExpo");
+                $('html,body').animate({scrollTop: targetHight - 170}, 800, "easeInOutExpo");
             });
         }
 	});
