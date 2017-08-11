@@ -44,6 +44,8 @@ colors:
   stanford-red: '#8c1515'
   stanford-gray: '#4d4f53'
   weired-blue:  '#1d4f91'
+  nvidia:       '#76b900'
+  nvidia-dark:  '#588a00'
 
 kramdown:
   auto_ids:  false
