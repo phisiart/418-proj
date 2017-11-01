@@ -2,6 +2,10 @@
 
 ### Zhixun Tan (zhixunt), Peng Wang (pwang1)
 
+Website: https://phisiart.github.io/418-proj/
+
+Repository: https://github.com/phisiart/tvm
+
 ### Summary
 
 We want to add a WebGL backend for MXNet/TVM, which enables performing tensor computations on the GPU within a browser.
