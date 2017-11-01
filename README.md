@@ -8,7 +8,7 @@ We want to add a WebGL backend for MXNet/TVM, which enables performing tensor co
 
 ### Background: MXNet and TVM
 
-[MXNet](https://github.com/apache/incubator-mxnet) is an open-source deep learning framework, similar to TensorFlow, Caffe, CNTK, etc. The programmer specifies a high-level **computation graph**, and MXNet utilizes a data-flow runtime scheduler to execute the graph in a parallel / distributed setting, depending on the available computation resources. MXNet supports running deep learning algorithms in various environments: CPUs, GPUs, or even mobile devices.
+[MXNet](https://github.com/apache/incubator-mxnet) is an open-source deep learning framework, similar to [TensorFlow](https://github.com/tensorflow/tensorflow), [Caffe](https://github.com/caffe2/caffe2), [CNTK](https://github.com/Microsoft/CNTK), etc. The programmer specifies a high-level **computation graph**, and MXNet utilizes a data-flow runtime scheduler to execute the graph in a parallel / distributed setting, depending on the available computation resources. MXNet supports running deep learning algorithms in various environments: CPUs, GPUs, or even mobile devices.
 
 An active project within MXNet is [TVM](https://github.com/dmlc/tvm), an intermediate representation for computation graphs. After the user uses MXNet (or other frameworks that TVM intends to support) to create a machine learning program, the computation graph is transformed into a lower-level but still cross-platform representation in TVM. Then, TVM supports further transformations into platform-specific code: LLVM, CUDA, OpenCL, etc.
 
@@ -16,17 +16,17 @@ An active project within MXNet is [TVM](https://github.com/dmlc/tvm), an interme
 
 Our project is to add a new backend platform for TVM: OpenGL.
 
-#### Why OpenGL? I thought with CUDA, we are passed this age?
+#### Why OpenGL when we have CUDA?
 
-It is true that we can (and should) use CUDA to write neural networks for the GPU. Our goal is actually running them in the browser. Currently, WebGL is supported by all the main-stream browsers. Neither OpenCL nor CUDA is supported by them. Therefore, if we want to utilize a GPU from the browser, we still need to go back to the pre-CUDA age.
+It is true that we can (and should) use CUDA to write neural networks for the GPU. Our goal is actually running them in the browser. Currently, WebGL is supported by all the main-stream browsers. Neither OpenCL nor CUDA is supported by them. Therefore, if we want to utilize a GPU from the browser, we still need to go back to the dark pre-CUDA age.
 
-Most browsers support WebGL with GLSL (OpenGL Shading Language) v3, which does not have the "compute shader", i.e. CUDA-like programming environment. We still need to utilize the traditional graphics pipeline (with vertex shader and fragment shader).
+Most browsers support WebGL with GLSL (OpenGL Shading Language) v3, which does not have the "compute shader", i.e. CUDA-like computation kernel. We still need to utilize the traditional graphics pipeline (with a vertex shader and a fragment shader).
 
 #### Approach Overview
 
-The basic method that we are going to use is to embed arrays inside OpenGL textures, and use fragment shaders to perform computations. In this way, OpenGL thinks we are rendering a frame of picture, but we are actually doing something like a 1D convolution.
+The basic method that we are going to use is to embed arrays inside OpenGL textures, and use fragment shaders to perform computations. In this way, OpenGL thinks we are rendering a frame of picture, but we are actually doing tensor computations like matrix multiplication or 1D convolution.
 
-The specific tasks we need to accomplish are:
+The specific tasks we want to accomplish are:
 
 - Create a WebGL runtime for TVM. We do have other runtimes for reference (e.g. the OpenCL runtime).
 
@@ -44,11 +44,23 @@ The specific tasks we need to accomplish are:
 
 ### Resources and Reference
 
-TODO(zhixunt)
+- We will work on the codebase of [TVM (https://github.com/dmlc/tvm)](https://github.com/dmlc/tvm). TVM already has codegen and runtime for OpenCL, which should be helpful reference for our OpenGL codegen and runtime.
+
+- Some handcrafted WebGL kernels for specific algorithms are [https://github.com/waylonflinn/weblas](https://github.com/waylonflinn/weblas) and [https://github.com/PAIR-code/deeplearnjs/tree/master/src/math/webgl](https://github.com/PAIR-code/deeplearnjs/tree/master/src/math/webgl). We want TVM to automatically generate OpenGL shaders that have similar or better performance.
+
+- [This document (http://www.seas.upenn.edu/~cis565/fbo.htm)](http://www.seas.upenn.edu/~cis565/fbo.htm) provides an introduction to using OpenGL for GPGPU computations.
 
 ### Goals and Deliverables
 
-TODO(zhixunt)
+- [75%] A standalone (without TVM) program that uses OpenGL to do some computation. This program should have one or more array inputs, and an array output. This helps us get used to the overall OpenGL workflow (how to embed inputs into textures, and how to use fragment shaders).
+
+- [100%] Codegen for OpenGL that can generate fragment shaders (aka kernels).
+
+- [100%] C++ Runtime backend that deals with memory allocation/copy, etc., which sets up the environment to execute the shaders.
+
+- [100%] Explore the TVM scheduler for optimization (we need to further our understanding of TVM before determining what/how to optimize).
+
+- [125%] WebGL backend in JavaScript that runs in the browser.
 
 ### Platforms of Choice
 
@@ -60,6 +72,32 @@ In order to make our GLSL kernels run in the browser, we also need to write some
 
 Our code should run on any computer that has a GPU and supports OpenGL.
 
-### Schedule
+### (Tentative) Schedule
 
-TODO(zhixunt)
+- Week 1 (Until 11/05):
+
+  Create a standalone OpenGL program.
+
+  Study the structure of TVM.
+
+- Week 2 (Until 11/12)
+
+  Study the structure of OpenCL codegen and runtime of TVM.
+
+  Prototype OpenGL codegen and runtime for TVM. The components should be able to generate and run a simple example OpenGL program. The OpenGL program doesn't run in the browser yet.
+
+- Week 3 (Until 11/19)
+
+  Extend the OpenGL codegen to support more operations.
+
+- Week 4 (Until 11/26)
+
+  Explore TVM scheduler for optimization.
+
+- Week 5 (Until 12/03)
+
+  Port the runtime onto the browser.
+
+- Week 6 (Until 12/10)
+
+  Finish up anything left.
