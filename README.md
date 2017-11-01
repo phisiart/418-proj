@@ -10,29 +10,31 @@ We want to add a WebGL backend for MXNet/TVM, which enables performing tensor co
 
 [MXNet](https://github.com/apache/incubator-mxnet) is an open-source deep learning framework, similar to [TensorFlow](https://github.com/tensorflow/tensorflow), [Caffe](https://github.com/caffe2/caffe2), [CNTK](https://github.com/Microsoft/CNTK), etc. The programmer specifies a high-level **computation graph**, and MXNet utilizes a data-flow runtime scheduler to execute the graph in a parallel / distributed setting, depending on the available computation resources. MXNet supports running deep learning algorithms in various environments: CPUs, GPUs, or even mobile devices.
 
-An active project within MXNet is [TVM](https://github.com/dmlc/tvm), an intermediate representation for computation graphs. After the user uses MXNet (or other frameworks that TVM intends to support) to create a machine learning program, the computation graph is transformed into a lower-level but still cross-platform representation in TVM. Then, TVM supports further transformations into platform-specific code: LLVM, CUDA, OpenCL, etc.
+An active project within MXNet is [TVM](https://github.com/dmlc/tvm), an intermediate representation for computation graphs. After the user uses MXNet (or other frameworks that TVM intends to support) to create a machine learning program, the computation graph is transformed into a lower-level but still cross-platform representation in TVM. Then, TVM supports further transformations into platform-specific code: CUDA, OpenCL, etc. In other words, TVM is considered the LLVM for deep learning.
 
 ### Project Introduction: OpenGL Backend for TVM
 
-Our project is to add a new backend platform for TVM: OpenGL.
+Our project is to add a new backend platform for TVM: OpenGL. More specifically, we want TVM to be able to generate GLSL (OpenGL shading language) kernels to perform tensor computations on the GPU.
 
 #### Why OpenGL when we have CUDA?
 
-It is true that we can (and should) use CUDA to write neural networks for the GPU. Our goal is actually running them in the browser. Currently, WebGL is supported by all the main-stream browsers. Neither OpenCL nor CUDA is supported by them. Therefore, if we want to utilize a GPU from the browser, we still need to go back to the dark pre-CUDA age.
+A natural question is why we want to use OpenGL instead of CUDA (or OpenCL) to perform computation on the GPU. It is true that we can (and should) use CUDA to write neural networks for the GPU. Our goal is actually running them in a browser. Currently, WebGL is supported by all the main-stream browsers, but neither OpenCL nor CUDA is supported by them. Therefore, if we want to utilize a GPU from the browser, we still need to go back to the dark pre-CUDA age.
 
 Most browsers support WebGL with GLSL (OpenGL Shading Language) v3, which does not have the "compute shader", i.e. CUDA-like computation kernel. We still need to utilize the traditional graphics pipeline (with a vertex shader and a fragment shader).
 
-#### Approach Overview
+#### Project Outline
 
-The basic method that we are going to use is to embed arrays inside OpenGL textures, and use fragment shaders to perform computations. In this way, OpenGL thinks we are rendering a frame of picture, but we are actually doing tensor computations like matrix multiplication or 1D convolution.
+The main idea is to use OpenGL fragment shaders. We embed input arrays inside OpenGL textures, and perform computation within the shader. In this way, OpenGL thinks we are rendering a frame of picture, but we are actually doing tensor computations like matrix multiplication or 1D convolution.
 
-The specific tasks we want to accomplish are:
+In order to achieve our goal, we need to accomplish the following:
 
-- Create a WebGL runtime for TVM. We do have other runtimes for reference (e.g. the OpenCL runtime).
+- Codegen for OpenGL. We need to generate OpenGL fragment shaders from the TVM AST (abstract syntax tree). Currently TVM has codegen for C (yes, plain C code), CUDA, and OpenCL. The latter 2 reuse much of the code from the first, and cherry pick the different parts. We will do the same for OpenGL.
 
-- Figure out a way to embed data into WebGL textures. Some layout issues might need to be solved. Furthermore, rumor has it that older WebGL implementations don't even support float textures.
+- Scheduler for OpenGL. This is a TVM-specific term. The codegen needs to understand things like "blockIdx" and "threadIdx" in order to generate kernels. Unlike CUDA kernels which are per-thread, fragment shaders are per-pixel. Therefore, we need to add specific scheduling code to deal with this.
 
-- Perform some demo computation in the browser.
+- Runtime for OpenGL. This is the piece of code that loads input arrays into textures, launches the shader, and retrieves the output. TVM has an OpenCL runtime, and we need to write a similar one for OpenGL.
+
+- (Optional) JavaScript runtime for WebGL. In order to perform computations in the browser, we need to launch shaders using WebGL, in JavaScript, from a browser. This means we need to create another JavaScript runtime.
 
 ### Technical Challenges
 
