@@ -100,5 +100,7 @@ void main() {
 
 ### How to Perform GPGPU Computation in OpenGL
 
+<center><img src="opengl.png" alt="Drawing" style="width: 400px;"/></center>
+
 ### Optimizing Matrix Multiplication
 
