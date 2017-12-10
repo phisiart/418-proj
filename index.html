@@ -22,8 +22,6 @@
         {% capture id %}{{ node.id | remove:'/' | downcase }}{% endcapture %}
         <li class="p-{{id}}"><a href="#{{id}}">{{node.title}}</a></li>
       {% endfor %}
-
-      <li class="p-blog"><a href="https://phisiart.github.io/blog/">Blog</a></li>
     </ul></nav>
 
 

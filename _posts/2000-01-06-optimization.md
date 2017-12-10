@@ -15,7 +15,7 @@ Since OpenGL is designed for rendering, it is natual that it provides extensive 
 
 Therefore, a natual optimization that one can think of is to utilize all the color channels in a texture. Instead of just store 1 float in each pixel (thus using only the red channel), we can store 4 floats (thus utilizing all of RGBA). This allows us to read, write, or compute 4 values at the same time.
 
-### Using `OpenGL Intrinsics`
+### Using OpenGL Intrinsics
 
 OpenGL also provides fast intrinsics such as `dot` and `abs`. These intrinsics can be directly computed on `vec4`'s.
 
