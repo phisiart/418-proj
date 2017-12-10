@@ -1,6 +1,6 @@
 ---
 title: "Experiments"
-bg: black
+bg: gray
 color: white
 fa-icon: list
 ---
