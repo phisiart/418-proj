@@ -40,3 +40,31 @@ The following names are used to identify the corresponding implementation:
 - Vec4: As described in "Using `vec4`".
 
 - Dot: As described in "Using OpenGL Intrinsics".
+
+### Results
+
+These two plots demonstrate the running time of these programs on the two machines, with different matrix sizes.
+
+<br/>
+<center>
+<img src="img/imac.png" alt="imac" style="width: 600px;"/>
+</center>
+<br/>
+<center>
+Figure 3. Running time on iMac
+</center>
+<br/>
+
+<br/>
+<center>
+<img src="img/mbp.png" alt="imac" style="width: 600px;"/>
+</center>
+<br/>
+<center>
+Figure 4. Running time on MBP
+</center>
+<br/>
+
+### Discussion
+
+TODO(pwang1): Fill this in.
