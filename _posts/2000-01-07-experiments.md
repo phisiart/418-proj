@@ -27,7 +27,7 @@ The following names are used to identify the corresponding implementation:
 
 - 1D, CPU, O3: Matrices are stored as long, 1D arrays. The position of cells is manually converted to indices. `-O3` flag is applied.
 
-- OpenCL CPU: The 2D logic translated to OpenCL, and computed on CPU.
+- OpenCL CPU: The loop-addition logic translated to OpenCL, and computed on CPU.
 
 - 1D, GPU: Matrices stored as 1D arrays. Computed with OpenGL.
 
@@ -35,7 +35,7 @@ The following names are used to identify the corresponding implementation:
 
 - Trans: 2D arrays with the second matrix stored in column-major order. Computed with OpenGL.
 
-- OpenCL GPU: The 2D logic translated to OpenCL, and computed on GPU.
+- OpenCL GPU: The loop-addition logic translated to OpenCL, and computed on GPU.
 
 - Vec4: As described in "Using `vec4`".
 
@@ -65,6 +65,20 @@ Figure 4. Running time on MBP
 </center>
 <br/>
 
+Note: Due to OpenGL's limits on the size of each dimension of textures, the 1D solutions are only tested with `N<=128`.
+
 ### Discussion
 
-TODO(pwang1): Fill this in.
+The two platforms used in this experiment (iMac and MBP) represent two major categories: discrete (AMD Radeon) and integrated (Intel Iris) video cards. We expect NVIDIA video cards to have similar performance characteristics with AMD ones, which are found in iMacs. We plan to do the comparison on NVIDIA cards and with CUDA in the future.
+
+Generally, as the size of matrices grow, the speed of different implementations on GPU can be ranked as: 1D < 2D = Trans < OpenCL < Vec4 = Dot (for iMac); and 1D < Trans < 2D = OpenCL < Vec4 = Dot (for MBP). In other words, the straightforward OpenGL-based solution is slower than OpenCL, but with our proposed optimizations, the OpenGL kernel can be several (2 to 9) times faster than OpenCL.
+
+The first thing to observe is that 2D assignment of work is better than 1D, as can be seen from "1D GPU" versus "2D GPU". We are not aware of how exactly the OpenGL implementation assign work to blocks. But as reasoned in the last section, by informing OpenGL the 2D positional information of cells, it enables the scheduler to assign work more cache-friendly. This effect is more prominent on Intel Iris, and is possibly related to the difference in memory hierarchies and schedulers. 
+
+Then, in both graphs we notice that the performance is roughly the same whether matrices are stored in row-major or column-major order. This is expected. Since both GPUs have the notion of "warps", and adjacent cells will be calculated on different cores simultaneously, the cache line is still fully utilized when reading the column vector from a row-major matrix.
+
+Thirdly, the OpenCL programs are faster than the simple OpenGL kernel when `N` is relatively large, but slower for small `N`'s because of possible set-up overhead. The former can be 3 times faster for AMD Radeon, but in the case of Intel Iris the difference is relatively small. We suspect this is related to how the vendors implement OpenCL. But in general, OpenGL (with our choice of version) is intended for images, and involves more steps in the rendering pipeline; while OpenCL is designed for general-purpose computation.
+
+Finally, we are glad to see that with our optimizations (namely `vec4` and `dot`), the OpenGL programs outperform OpenCL on both platforms. This should largely be attributed to the SIMD inside each execution unit (i.e. each pixel/cell). The OpenGL `vec4` structure allows us to fetch and compute 4 elements with a single intrinsic. It seems that the compilers for both OpenGL and OpenCL compilers, by default, do not use SSE (or similar technologies) for the loop that calculates the dot product. Therefore, our hand-written optimizations will help.
+
+In conclusion, the experiments show our optimizations for OpenGL are very efficient in performance. These techniques can be integrated into the TVM codegen and runtime immediately, without the need to change anything in the user's programs. Since the performance characteristics of OpenGL is platform-specific, we will carry out more experiments on other targets.
